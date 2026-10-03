@@ -1,0 +1,25 @@
+{
+  "name": "pro-editz-live-studio",
+  "version": "1.0.0",
+  "description": "Live streaming studio for the Pro Editz NEW YouTube channel",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.2.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.proeditz.livestudio",
+    "productName": "Pro Editz Live Studio",
+    "asarUnpack": ["node_modules/ffmpeg-static/**"],
+    "files": ["main.js", "preload.js", "src/**", "renderer/**", "package.json"],
+    "win": { "target": "nsis" },
+    "mac": { "target": "dmg", "category": "public.app-category.video" }
+  }
+}

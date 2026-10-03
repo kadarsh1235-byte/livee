@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<title>Pro Editz Live Studio</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark"></span><b>Pro Editz</b> <i>NEW</i></div>
+  <div class="account">
+    <button id="btnSetup" class="ghost">Setup</button>
+    <span id="chan" class="chan" hidden><img id="chanImg" alt=""><span id="chanName"></span></span>
+    <button id="btnAuth" class="solid">Sign in with Google</button>
+  </div>
+</header>
+
+<main>
+  <div class="col settings">
+
+    <section>
+      <h2>Stream details</h2>
+      <label>Title<input data-key="details.title" maxlength="100"></label>
+      <label>Description<textarea data-key="details.description" rows="3"></textarea></label>
+      <label>Tags, separated by commas<input data-key="details.tags"></label>
+      <div class="row3">
+        <label>Visibility
+          <select data-key="details.privacy"><option value="public">Public</option><option value="unlisted">Unlisted</option><option value="private">Private</option></select></label>
+        <label>Category
+          <select data-key="details.category"><option value="20">Gaming</option><option value="24">Entertainment</option><option value="22">People and blogs</option><option value="26">How-to and style</option><option value="27">Education</option><option value="28">Science and tech</option><option value="10">Music</option></select></label>
+        <label>Latency
+          <select data-key="details.latency"><option value="normal">Normal (best quality)</option><option value="low">Low</option><option value="ultraLow">Ultra low</option></select></label>
+      </div>
+      <div class="pick">
+        <button id="pickThumb" class="ghost">Choose thumbnail</button>
+        <img id="thumbPrev" class="thumb" alt="" hidden>
+        <span id="thumbName" class="muted">No thumbnail chosen</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>What viewers see</h2>
+      <div class="seg" role="radiogroup" aria-label="Video source">
+        <label><input type="radio" name="mode" value="screen" data-key="video.mode" checked><span>Game / screen</span></label>
+        <label><input type="radio" name="mode" value="file" data-key="video.mode"><span>Pre-recorded video</span></label>
+      </div>
+
+      <div id="grpScreen">
+        <label class="only-win">Capture one window only (type its exact title, or leave empty for the whole screen)
+          <input data-key="video.windowTitle" placeholder="e.g. Minecraft 1.21"></label>
+        <label class="only-mac">Screen number (see the list in Sound)
+          <input type="number" min="0" data-key="video.screenIndex" value="1"></label>
+        <p class="hint">Tip: set your game to borderless windowed. Full-screen exclusive mode can capture as a black screen.</p>
+      </div>
+
+      <div id="grpFile" hidden>
+        <div class="pick"><button id="pickVideo" class="ghost">Choose video</button><span id="videoName" class="muted">No video chosen</span></div>
+        <label class="check"><input type="checkbox" data-key="video.loop" checked> Loop the video forever</label>
+        <label class="check"><input type="checkbox" data-key="video.useOwnSound" checked> Play the video's own sound</label>
+        <label>Video sound volume <output></output><input type="range" min="0" max="150" data-key="video.ownVolume" value="80"></label>
+      </div>
+
+      <div class="pick">
+        <button id="pickWm" class="ghost">Add logo watermark</button>
+        <button id="clearWm" class="ghost" hidden>Remove</button>
+        <span id="wmName" class="muted">No logo</span>
+        <select data-key="watermark.position" aria-label="Logo position"><option value="tr">Top right</option><option value="tl">Top left</option><option value="br">Bottom right</option><option value="bl">Bottom left</option></select>
+      </div>
+
+      <div class="row4">
+        <label>Resolution<select data-key="out.res"><option value="1280x720">720p</option><option value="1920x1080">1080p</option><option value="854x480">480p</option></select></label>
+        <label>Frame rate<select data-key="out.fps"><option value="30">30</option><option value="60">60</option></select></label>
+        <label>Bitrate (kbps)<input type="number" min="1000" max="20000" step="500" data-key="out.bitrate"></label>
+        <label>Encoder<select data-key="out.encoder"><option value="x264">CPU (x264)</option><option value="nvenc">NVIDIA</option><option value="amf">AMD</option><option value="qsv">Intel</option><option value="videotoolbox">Apple</option></select></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sound</h2>
+      <div class="music">
+        <div class="pick"><button id="addMusic" class="ghost">Add background music</button><button id="clearMusic" class="ghost" hidden>Clear all</button></div>
+        <ol id="musicList" class="tracks"></ol>
+        <label class="check"><input type="checkbox" data-key="music.enabled" checked> Play background music (loops forever)</label>
+        <label class="check"><input type="checkbox" data-key="music.shuffle"> Shuffle the order each time you go live</label>
+        <label>Music volume <output></output><input type="range" min="0" max="150" data-key="music.volume" value="25"></label>
+        <p class="hint">Use royalty-free music or tracks you own. Copyrighted songs can get your stream muted or blocked.</p>
+      </div>
+      <div class="pick"><b class="sub">Devices</b><button id="refreshDev" class="ghost">Refresh list</button></div>
+      <label>Game / computer sound
+        <select id="selSystem" data-key="system.device"><option value="">None</option></select></label>
+      <label>Game sound volume <output></output><input type="range" min="0" max="150" data-key="system.volume" value="100"></label>
+      <label>Microphone
+        <select id="selMic" data-key="mic.device"><option value="">None</option></select></label>
+      <label>Microphone volume <output></output><input type="range" min="0" max="150" data-key="mic.volume" value="100"></label>
+      <p class="hint" id="sysHint"></p>
+    </section>
+  </div>
+
+  <aside class="col side">
+    <div class="deck" id="deck" data-phase="idle">
+      <div class="onair"><span class="tally"></span><span id="phaseText">Off air</span></div>
+      <div id="timer" class="timer">00:00:00</div>
+      <button id="btnLive" class="golive">Go live</button>
+      <p id="statusText" class="status">Sign in, choose what to show, then go live.</p>
+      <div class="link" id="linkRow" hidden><button id="btnOpen" class="ghost">Open stream</button><button id="btnCopy" class="ghost">Copy link</button></div>
+      <dl class="stats">
+        <div><dt>Frame rate</dt><dd id="stFps">-</dd></div>
+        <div><dt>Bitrate</dt><dd id="stBr">-</dd></div>
+        <div><dt>Speed</dt><dd id="stSpeed">-</dd></div>
+        <div><dt>Dropped</dt><dd id="stDrop">-</dd></div>
+      </dl>
+    </div>
+
+    <div class="chat">
+      <h2>Live chat</h2>
+      <ul id="chatList" aria-live="polite"><li class="empty">Chat appears here once you are live.</li></ul>
+      <div class="send"><input id="chatInput" maxlength="200" placeholder="Say something to your viewers" disabled><button id="chatSend" class="solid" disabled>Send</button></div>
+    </div>
+
+    <details class="log"><summary>Encoder log</summary><pre id="logBox"></pre></details>
+  </aside>
+</main>
+
+<dialog id="setup">
+  <form method="dialog" id="setupForm">
+    <h2>Connect your Google account</h2>
+    <p class="hint">One-time setup. Full steps are in README.md. You need an OAuth client of type "Desktop app" from Google Cloud with YouTube Data API v3 turned on.</p>
+    <label>Client ID<input id="setId" autocomplete="off" required></label>
+    <label>Client secret<input id="setSecret" type="password" autocomplete="off" placeholder="Leave empty to keep the saved one"></label>
+    <label>Google account email for the Pro Editz NEW channel<input id="setEmail" type="email" required></label>
+    <div class="actions"><button type="button" id="setCancel" class="ghost">Cancel</button><button id="setSave" class="solid" value="save">Save</button></div>
+  </form>
+</dialog>
+
+<div id="toast" role="status" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
